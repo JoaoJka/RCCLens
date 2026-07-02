@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RCCLens - Verificador de Perfil</title>
+  <link rel="icon" type="image/png" href="https://www.habbo.com.br/habbo-imaging/badge/b09014s43131s50134s17013s170151e0a30a5a81c1fcb98d10054d03bc593.gif">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1312,10 +1313,9 @@
       margin-bottom: 20px;
     }
 
-    /* Grupo criado, atualizado, juntou-se */
     .group-dates {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr;
       gap: 8px;
       margin-bottom: 20px;
     }
@@ -1900,21 +1900,7 @@
       <div class="modal-group-type" id="modalGroupType"></div>
       <div class="modal-group-desc" id="modalGroupDesc"></div>
 
-      <!-- Datas do grupo -->
-      <div class="group-dates">
-        <div class="group-dates-item">
-          <div class="label">Grupo criado</div>
-          <div class="value" id="modalGroupCreated"></div>
-        </div>
-        <div class="group-dates-item">
-          <div class="label">Grupo atualizado</div>
-          <div class="value" id="modalGroupUpdated"></div>
-        </div>
-        <div class="group-dates-item">
-          <div class="label">Juntou-se ao grupo</div>
-          <div class="value" id="modalGroupJoined"></div>
-        </div>
-      </div>
+
 
       <div class="modal-group-info">
         <div class="modal-group-info-item">
@@ -2008,7 +1994,7 @@
 
     let currentServer = 'br';
     let currentUserGroups = [];
-    let currentUserFriends = []; // armazena amigos do usuário atual para comparação
+    let currentUserFriends = [];
 
     // ===== DOM REFS =====
     const usernameInput = document.getElementById('usernameInput');
@@ -2096,11 +2082,12 @@
       return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
-    async function fetchGroupDetails(server, groupId) {
+    async function fetchGroupMembersCount(server, groupId) {
       try {
-        const res = await fetch(getApiUrl(server, `/groups/${groupId}`));
+        const res = await fetch(getApiUrl(server, `/groups/${groupId}/members`));
         if (!res.ok) return null;
-        return await res.json();
+        const data = await res.json();
+        return Array.isArray(data) ? data.length : null;
       } catch (e) {
         return null;
       }
@@ -2308,7 +2295,6 @@
       document.body.style.overflow = '';
     }
 
-    // ===== GROUP MODAL MELHORADO =====
     function openGroupModal(group) {
       const badgeUrl = group.badgeCode ? getGroupBadgeUrl(currentServer, group.badgeCode) : '';
       const img = document.getElementById('modalGroupBadgeImg');
@@ -2333,18 +2319,17 @@
       document.getElementById('modalGroupType').textContent = group.type || 'NORMAL';
       document.getElementById('modalGroupDesc').textContent = group.description || 'Sem descricao';
 
-      // NOVAS DATAS DO GRUPO
-      document.getElementById('modalGroupCreated').textContent = formatDate(group.created, true);
-      document.getElementById('modalGroupUpdated').textContent = formatDate(group.updated, true);
-      document.getElementById('modalGroupJoined').textContent = formatDate(group.memberSince, true);
-
       document.getElementById('modalGroupTypeVal').textContent = group.type || 'NORMAL';
       document.getElementById('modalGroupRole').textContent = group.isAdmin ? 'Administrador' : 'Membro';
-      document.getElementById('modalGroupMembers').textContent = group.membersCount !== undefined ? group.membersCount.toLocaleString('pt-BR') : 'N/A';
+      document.getElementById('modalGroupMembers').textContent = '...';
       document.getElementById('modalGroupId').textContent = group.id || 'N/A';
 
       document.getElementById('groupModal').classList.add('active');
       document.body.style.overflow = 'hidden';
+
+      fetchGroupMembersCount(currentServer, group.id).then(count => {
+        document.getElementById('modalGroupMembers').textContent = count !== null ? count.toLocaleString('pt-BR') : 'N/A';
+      });
     }
 
     function closeGroupModal(e) {
@@ -2376,7 +2361,6 @@
       document.body.style.overflow = '';
     }
 
-    // ===== FRIEND MODAL MELHORADO =====
     async function openFriendModal(friend) {
       document.getElementById('modalFriendAvatar').src = getFriendAvatarUrl(currentServer, friend.figureString);
       document.getElementById('modalFriendName').textContent = friend.name;
@@ -2392,7 +2376,6 @@
       document.body.style.overflow = 'hidden';
 
       try {
-        // Fetch friend profile to get uniqueId
         const userRes = await fetch(getApiUrl(currentServer, `/users?name=${encodeURIComponent(friend.name)}`));
         if (!userRes.ok) {
           groupsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Nao foi possivel carregar os grupos</span>';
@@ -2402,13 +2385,11 @@
         const userData = await userRes.json();
         const uniqueId = userData.uniqueId;
 
-        // Fetch friend groups e friend friends em paralelo
         const [groupsRes, friendsRes] = await Promise.allSettled([
           fetch(getApiUrl(currentServer, `/users/${uniqueId}/groups`)),
           fetch(getApiUrl(currentServer, `/users/${uniqueId}/friends`))
         ]);
 
-        // ===== GRUPOS EM COMUM =====
         let friendGroups = [];
         if (groupsRes.status === 'fulfilled' && groupsRes.value.ok) {
           friendGroups = await groupsRes.value.json();
@@ -2419,6 +2400,7 @@
         groupsContainer.innerHTML = '';
         if (mutualGroups.length > 0) {
           mutualGroups.forEach(g => {
+            const friendGroup = friendGroups.find(fg => fg.id === g.id);
             const card = document.createElement('div');
             card.className = 'modal-friend-group-card';
             const badgeUrl = g.badgeCode ? getGroupBadgeUrl(currentServer, g.badgeCode) : '';
@@ -2427,7 +2409,7 @@
                          onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<div style=width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#${g.primaryColour || '32383F'},#${g.secondaryColour || '1E1E1E'});display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;>${g.name.charAt(0).toUpperCase()}</div>')">
                     <div class="group-card-info">
                         <div class="group-card-name" title="${g.name}">${g.name}</div>
-                        <div class="group-card-role">${g.isAdmin ? 'Administrador' : 'Membro'}</div>
+                        <div class="group-card-role">${friendGroup?.isAdmin ? 'Administrador' : 'Membro'}</div>
                     </div>
                 `;
             groupsContainer.appendChild(card);
@@ -2436,7 +2418,6 @@
           groupsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Nenhum grupo em comum</span>';
         }
 
-        // ===== AMIGOS EM COMUM =====
         let friendFriends = [];
         if (friendsRes.status === 'fulfilled' && friendsRes.value.ok) {
           friendFriends = await friendsRes.value.json();
@@ -2475,7 +2456,6 @@
       document.body.style.overflow = '';
     }
 
-    // Keyboard escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeModal();
@@ -2485,7 +2465,6 @@
       }
     });
 
-    // ===== MAIN SEARCH =====
     async function searchProfile() {
       const username = usernameInput.value.trim();
       if (!username) return;
@@ -2494,7 +2473,6 @@
       showState('loading');
       searchBtn.disabled = true;
 
-      // Reset expanded states
       Object.keys(expandedState).forEach(k => expandedState[k] = false);
       expandedState.selectedBadges = true;
       Object.keys(LIMITS).forEach(k => {
@@ -2516,7 +2494,6 @@
         const userData = await userRes.json();
         const uniqueId = userData.uniqueId;
 
-        // Fetch all data in parallel
         const [profileRes, friendsRes, groupsRes, roomsRes, badgesRes, achievementsRes] = await Promise.allSettled([
           fetch(getApiUrl(currentServer, `/users/${uniqueId}/profile`)),
           fetch(getApiUrl(currentServer, `/users/${uniqueId}/friends`)),
@@ -2528,24 +2505,11 @@
 
         const profileData = profileRes.status === 'fulfilled' && profileRes.value.ok ? await profileRes.value.json() : null;
         const friendsData = friendsRes.status === 'fulfilled' && friendsRes.value.ok ? await friendsRes.value.json() : [];
-        let groupsData = groupsRes.status === 'fulfilled' && groupsRes.value.ok ? await groupsRes.value.json() : [];
-
-        if (groupsData.length > 0) {
-          const groupDetailsPromises = groupsData.map(async (group) => {
-            const details = await fetchGroupDetails(currentServer, group.id);
-            if (details) {
-              group.created = details.created;
-              group.updated = details.updated;
-              group.membersCount = details.membersCount;
-            }
-            return group;
-          });
-          groupsData = await Promise.all(groupDetailsPromises);
-        } const roomsData = roomsRes.status === 'fulfilled' && roomsRes.value.ok ? await roomsRes.value.json() : [];
+        const groupsData = groupsRes.status === 'fulfilled' && groupsRes.value.ok ? await groupsRes.value.json() : [];
+        const roomsData = roomsRes.status === 'fulfilled' && roomsRes.value.ok ? await roomsRes.value.json() : [];
         const badgesData = badgesRes.status === 'fulfilled' && badgesRes.value.ok ? await badgesRes.value.json() : [];
         const achievementsData = achievementsRes.status === 'fulfilled' && achievementsRes.value.ok ? await achievementsRes.value.json() : [];
 
-        // Store user's groups and friends for mutual comparison
         currentUserGroups = groupsData;
         currentUserFriends = friendsData;
 
@@ -2560,7 +2524,6 @@
           achievements: achievementsData
         };
 
-        // Render all sections
         ['selectedBadges', 'allBadges', 'friends', 'groups', 'rooms', 'achievements'].forEach(section => {
           renderSection(section);
         });
@@ -2574,12 +2537,9 @@
       }
     }
 
-    // ===== RENDER PROFILE HEADER =====
     function renderProfile(userData, profileData) {
-      // Visibility alert
       document.getElementById('visibilityAlert').style.display = userData.profileVisible === false ? 'flex' : 'none';
 
-      // Avatar
       const avatarContainer = document.getElementById('avatarContainer');
       document.getElementById('avatarImg').src = getAvatarUrl(currentServer, userData.figureString);
       if (userData.online) {
@@ -2588,7 +2548,6 @@
         avatarContainer.classList.remove('online');
       }
 
-      // Online status
       const onlineStatus = document.getElementById('onlineStatus');
       const onlineText = document.getElementById('onlineText');
       if (userData.online) {
@@ -2599,17 +2558,14 @@
         onlineText.textContent = 'Offline';
       }
 
-      // Name & Motto
       document.getElementById('profileName').textContent = userData.name || 'Desconhecido';
       document.getElementById('profileMotto').textContent = userData.motto || 'Sem missao';
 
-      // Info grid
       document.getElementById('infoLevel').textContent = userData.currentLevel !== undefined ? userData.currentLevel : '-';
       document.getElementById('infoXP').textContent = userData.totalExperience !== undefined ? userData.totalExperience.toLocaleString('pt-BR') : '-';
       document.getElementById('infoMemberSince').textContent = formatDate(userData.memberSince);
       document.getElementById('infoLastAccess').textContent = timeAgo(userData.lastAccessTime);
 
-      // Level progress with current and next level
       const currentLevel = userData.currentLevel || 0;
       const percent = userData.currentLevelCompletePercent || 0;
       document.getElementById('levelCurrent').textContent = currentLevel;
@@ -2617,7 +2573,6 @@
       document.getElementById('levelPercent').textContent = `${percent}%`;
       document.getElementById('levelBar').style.width = `${percent}%`;
     }
-
   </script>
 </body>
 
