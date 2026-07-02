@@ -1,0 +1,2360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RCCLens - Verificador de Perfil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===== SCROLLBARS ESTILIZADOS ===== */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(30, 30, 30, 0.5); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #EAA506, #c48a05); border-radius: 4px; border: 2px solid rgba(30, 30, 30, 0.5); }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #f5c542, #EAA506); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+body {
+    font-family: 'Rajdhani', sans-serif;
+    background: radial-gradient(ellipse at 50% 0%, #2a2f35 0%, #1a1c1f 50%, #121315 100%);
+    color: #e2e4e8;
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    background: rgba(32, 36, 40, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 10px;
+    border: 1px solid rgba(50, 56, 63, 0.6);
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(234, 165, 6, 0.05);
+    position: relative;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(234, 165, 6, 0.3), transparent);
+}
+
+/* ===== HEADER ===== */
+.header {
+    padding: 24px 28px;
+    border-bottom: 1px solid rgba(50, 56, 63, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.header-bar {
+    width: 3px;
+    height: 44px;
+    background: linear-gradient(180deg, #EAA506, #c48a05);
+    border-radius: 2px;
+    flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(234, 165, 6, 0.3);
+}
+
+.header-text h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.8px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.header-text p {
+    font-size: 12.5px;
+    color: #8a9199;
+    margin-top: 3px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+}
+
+/* ===== SEARCH ===== */
+.search-section {
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(30, 30, 30, 0.3);
+}
+
+.habbo-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #EAA506;
+    letter-spacing: 2px;
+    min-width: 48px;
+}
+
+.search-input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #1E1E1E;
+    border: 1px solid #32383F;
+    border-radius: 10px;
+    padding: 0 16px;
+    height: 44px;
+    transition: all 0.3s ease;
+}
+
+.search-input-wrapper:focus-within {
+    border-color: rgba(234, 165, 6, 0.5);
+    box-shadow: 0 0 0 3px rgba(234, 165, 6, 0.08);
+}
+
+.search-input-wrapper input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.search-input-wrapper input::placeholder {
+    color: #5a6168;
+    font-weight: 400;
+}
+
+.server-select-wrapper { position: relative; }
+
+.server-select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #8a9199;
+    pointer-events: none;
+}
+
+.server-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #1E1E1E;
+    border: 1px solid #32383F;
+    border-radius: 10px;
+    height: 44px;
+    padding: 0 36px 0 16px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    min-width: 90px;
+}
+
+.server-select:focus {
+    border-color: rgba(234, 165, 6, 0.5);
+    box-shadow: 0 0 0 3px rgba(234, 165, 6, 0.08);
+}
+
+.server-select option {
+    background: #1E1E1E;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #EAA506, #d49305);
+    color: #1E1E1E;
+    border: none;
+    border-radius: 10px;
+    padding: 0 24px;
+    height: 44px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(234, 165, 6, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.search-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.search-btn:hover::after { left: 100%; }
+
+.search-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(234, 165, 6, 0.35);
+}
+
+.search-btn:active { transform: translateY(0); }
+.search-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ===== CONTENT ===== */
+.content-area { padding: 0 28px 28px 28px; }
+
+.profile-card {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-card.active { display: block; }
+
+/* ===== ALERT ===== */
+.alert {
+    background: rgba(234, 165, 6, 0.08);
+    border: 1px solid rgba(234, 165, 6, 0.3);
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.alert-icon {
+    width: 26px; height: 26px;
+    background: rgba(234, 165, 6, 0.15);
+    border: 1px solid rgba(234, 165, 6, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #EAA506;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.alert-text {
+    font-size: 13px;
+    color: #d4a84a;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* ===== PROFILE HEADER ===== */
+.profile-header {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.avatar-container {
+    position: relative;
+    padding: 6px;
+    background: rgba(50, 56, 63, 0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(50, 56, 63, 0.5);
+    transition: all 0.3s ease;
+}
+
+.avatar-container.online {
+    border-color: rgba(34, 197, 94, 0.4);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.1);
+}
+
+.avatar-img {
+    width: 100px;
+    height: 160px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+}
+
+.online-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    transition: all 0.3s ease;
+}
+
+.online-status.offline {
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    color: #6b7280;
+}
+
+.online-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+    animation: pulse 2s infinite;
+}
+
+.online-status.offline .online-dot {
+    background: #6b7280;
+    box-shadow: none;
+    animation: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.profile-info { flex: 1; min-width: 0; }
+
+.profile-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.profile-motto {
+    font-size: 14px;
+    color: #8a9199;
+    margin-bottom: 18px;
+    font-style: italic;
+    font-weight: 400;
+    padding-left: 2px;
+}
+
+.profile-motto::before { content: '"'; color: #EAA506; font-weight: 700; }
+.profile-motto::after { content: '"'; color: #EAA506; font-weight: 700; }
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.info-item {
+    background: rgba(32, 36, 40, 0.6);
+    border: 1px solid rgba(50, 56, 63, 0.4);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    border-color: rgba(234, 165, 6, 0.2);
+    background: rgba(32, 36, 40, 0.8);
+}
+
+.info-item .label {
+    font-size: 9px;
+    color: #5a6168;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.info-item .value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* ===== LEVEL ===== */
+.level-section {
+    margin-bottom: 28px;
+    background: rgba(32, 36, 40, 0.4);
+    border: 1px solid rgba(50, 56, 63, 0.3);
+    border-radius: 10px;
+    padding: 18px 20px;
+}
+
+.level-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.level-header .label {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.level-header .value {
+    font-size: 13px;
+    color: #EAA506;
+    font-weight: 700;
+}
+
+.level-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(50, 56, 63, 0.5);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.level-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #EAA506, #f5c542);
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(234, 165, 6, 0.3);
+}
+
+/* ===== SECTIONS ===== */
+.section { margin-top: 24px; }
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.section-title::before {
+    content: '';
+    width: 3px;
+    height: 16px;
+    background: linear-gradient(180deg, #EAA506, #c48a05);
+    border-radius: 2px;
+}
+
+.section-count {
+    font-size: 11px;
+    color: #5a6168;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.5px;
+}
+
+.section-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-search {
+    background: #1E1E1E;
+    border: 1px solid #32383F;
+    border-radius: 8px;
+    padding: 0 12px;
+    height: 32px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    outline: none;
+    width: 160px;
+    transition: all 0.3s ease;
+}
+
+.section-search:focus {
+    border-color: rgba(234, 165, 6, 0.4);
+    box-shadow: 0 0 0 2px rgba(234, 165, 6, 0.06);
+}
+
+.section-search::placeholder { color: #5a6168; }
+
+.section-filter {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #1E1E1E url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238a9199' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") no-repeat right 10px center;
+    border: 1px solid #32383F;
+    border-radius: 8px;
+    height: 32px;
+    padding: 0 28px 0 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #8a9199;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    min-width: 110px;
+}
+
+.section-filter:focus {
+    border-color: rgba(234, 165, 6, 0.4);
+    color: #fff;
+}
+
+.section-filter:hover {
+    border-color: rgba(234, 165, 6, 0.3);
+}
+
+.section-filter option {
+    background: #1E1E1E;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.toggle-btn {
+    background: rgba(234, 165, 6, 0.1);
+    border: 1px solid rgba(234, 165, 6, 0.2);
+    border-radius: 8px;
+    padding: 0 14px;
+    height: 32px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #EAA506;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.toggle-btn:hover {
+    background: rgba(234, 165, 6, 0.2);
+    border-color: rgba(234, 165, 6, 0.4);
+}
+
+/* ===== GRIDS ===== */
+.badges-grid, .all-badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 10px;
+}
+
+.friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+}
+
+/* ===== CARDS ===== */
+.badge-item, .friend-item, .group-item, .room-item, .achievement-item {
+    background: rgba(32, 36, 40, 0.5);
+    border: 1px solid rgba(50, 56, 63, 0.4);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.badge-item::before, .friend-item::before, .group-item::before, .room-item::before, .achievement-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(180deg, #EAA506, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.badge-item:hover, .friend-item:hover, .group-item:hover, .room-item:hover, .achievement-item:hover {
+    border-color: rgba(234, 165, 6, 0.3);
+    background: rgba(32, 36, 40, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.badge-item:hover::before, .friend-item:hover::before, .group-item:hover::before, .room-item:hover::before, .achievement-item:hover::before {
+    opacity: 1;
+}
+
+.badge-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.badge-item img {
+    width: 44px; height: 44px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: transform 0.3s ease;
+}
+
+.badge-item:hover img { transform: scale(1.1); }
+
+.badge-info { min-width: 0; }
+
+.badge-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.badge-desc {
+    font-size: 10px;
+    color: #5a6168;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.35;
+}
+
+.friend-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.friend-item img {
+    width: 48px; height: 72px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: transform 0.3s ease;
+}
+
+.friend-item:hover img { transform: scale(1.05); }
+
+.friend-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.friend-motto {
+    font-size: 10px;
+    color: #5a6168;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.group-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.group-badge-img {
+    width: 44px; height: 44px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: transform 0.3s ease;
+}
+
+.group-item:hover .group-badge-img { transform: scale(1.1); }
+
+.group-info { min-width: 0; flex: 1; }
+
+.group-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.group-desc {
+    font-size: 10px;
+    color: #5a6168;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.35;
+}
+
+.group-admin {
+    font-size: 9px;
+    color: #EAA506;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+.room-item { padding: 0; overflow: hidden; }
+
+.room-thumb-wrapper {
+    width: 100%;
+    height: 120px;
+    background: #1a1d20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.room-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.room-thumb-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: #4a5158;
+}
+
+.room-thumb-placeholder svg {
+    width: 32px;
+    height: 32px;
+    opacity: 0.5;
+}
+
+.room-thumb-placeholder span {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.room-info { padding: 12px 14px; }
+
+.room-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.room-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 10px;
+    color: #5a6168;
+}
+
+.room-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.room-meta svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.6;
+}
+
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.achievement-img {
+    width: 36px; height: 36px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.achievement-info { flex: 1; min-width: 0; }
+
+.achievement-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.achievement-name .level-tag {
+    color: #EAA506;
+    font-weight: 700;
+    margin-left: 6px;
+}
+
+.achievement-category {
+    font-size: 10px;
+    color: #5a6168;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.achievement-score {
+    font-size: 11px;
+    color: #8a9199;
+    font-weight: 600;
+}
+
+/* ===== COLLAPSED ===== */
+.collapsed .grid-content { display: none; }
+.collapsed .section-header { margin-bottom: 0; }
+
+/* ===== EMPTY ===== */
+.section-empty {
+    color: #4a5158;
+    font-size: 12px;
+    text-align: center;
+    padding: 30px;
+    grid-column: 1 / -1;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #4a5158;
+    text-align: center;
+    padding: 40px;
+}
+
+.empty-icon {
+    width: 72px; height: 72px;
+    margin-bottom: 20px;
+    opacity: 0.15;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.2;
+}
+
+.empty-state h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #5a6168;
+    margin-bottom: 6px;
+}
+
+.empty-state p {
+    font-size: 13px;
+    color: #4a5158;
+}
+
+/* ===== LOADING ===== */
+.loading {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #6b7280;
+}
+
+.loading.active { display: flex; }
+
+.spinner {
+    width: 44px; height: 44px;
+    border: 3px solid rgba(50, 56, 63, 0.5);
+    border-top-color: #EAA506;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 16px;
+    box-shadow: 0 0 15px rgba(234, 165, 6, 0.2);
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading p {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* ===== ERROR ===== */
+.error-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #ef4444;
+    text-align: center;
+    padding: 40px;
+}
+
+.error-state.active { display: flex; }
+
+.error-icon {
+    width: 52px; height: 52px;
+    margin-bottom: 14px;
+    opacity: 0.6;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.5;
+}
+
+.error-state p {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-overlay.active { display: flex; }
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #25292e, #1e2125);
+    border: 1px solid rgba(50, 56, 63, 0.6);
+    border-radius: 10px;
+    max-width: 460px;
+    width: 100%;
+    padding: 32px;
+    position: relative;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(234, 165, 6, 0.05);
+    animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal-content::-webkit-scrollbar { width: 6px; }
+.modal-content::-webkit-scrollbar-track { background: rgba(30, 30, 30, 0.3); border-radius: 3px; }
+.modal-content::-webkit-scrollbar-thumb { background: rgba(234, 165, 6, 0.4); border-radius: 3px; }
+
+@keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-close {
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 32px; height: 32px;
+    background: rgba(50, 56, 63, 0.5);
+    border: 1px solid rgba(50, 56, 63, 0.6);
+    border-radius: 8px;
+    color: #8a9199;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+}
+
+.modal-close:hover {
+    background: rgba(234, 165, 6, 0.15);
+    border-color: rgba(234, 165, 6, 0.3);
+    color: #EAA506;
+}
+
+.modal-badge-img {
+    width: 80px; height: 80px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    margin: 0 auto 20px;
+    display: block;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+}
+
+.modal-badge-code {
+    text-align: center;
+    font-size: 11px;
+    color: #5a6168;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.modal-badge-name {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: 0.3px;
+}
+
+.modal-badge-desc {
+    text-align: center;
+    font-size: 13px;
+    color: #8a9199;
+    line-height: 1.6;
+    padding: 0 8px;
+}
+
+.modal-divider {
+    width: 40px; height: 2px;
+    background: linear-gradient(90deg, transparent, #EAA506, transparent);
+    margin: 16px auto;
+    border-radius: 1px;
+}
+
+/* ===== GROUP MODAL MELHORADO ===== */
+.modal-group-badge-img {
+    width: 80px; height: 80px;
+    border-radius: 12px;
+    margin: 0 auto 16px;
+    display: block;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.3));
+}
+
+.modal-group-name {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.modal-group-type {
+    text-align: center;
+    font-size: 11px;
+    color: #EAA506;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+}
+
+.modal-group-desc {
+    text-align: center;
+    font-size: 13px;
+    color: #8a9199;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Grupo criado, atualizado, juntou-se */
+.group-dates {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.group-dates-item {
+    background: rgba(32, 36, 40, 0.6);
+    border: 1px solid rgba(50, 56, 63, 0.4);
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.group-dates-item:hover {
+    border-color: rgba(234, 165, 6, 0.3);
+    background: rgba(32, 36, 40, 0.8);
+}
+
+.group-dates-item .label {
+    font-size: 8px;
+    color: #5a6168;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.group-dates-item .value {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.group-dates-item .value i {
+    color: #EAA506;
+    font-style: normal;
+}
+
+.modal-group-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.modal-group-info-item {
+    background: rgba(32, 36, 40, 0.6);
+    border: 1px solid rgba(50, 56, 63, 0.4);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+}
+
+.modal-group-info-item .label {
+    font-size: 9px;
+    color: #5a6168;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+
+.modal-group-info-item .value {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* Room Modal */
+.modal-room-img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: block;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.modal-room-name {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.modal-room-desc {
+    text-align: center;
+    font-size: 13px;
+    color: #8a9199;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.modal-room-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.modal-room-info-item {
+    background: rgba(32, 36, 40, 0.6);
+    border: 1px solid rgba(50, 56, 63, 0.4);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+.modal-room-info-item .label {
+    font-size: 9px;
+    color: #5a6168;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+
+.modal-room-info-item .value {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* ===== FRIEND MODAL MELHORADO ===== */
+.modal-friend-avatar {
+    width: 80px; height: 120px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    margin: 0 auto 16px;
+    display: block;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+}
+
+.modal-friend-name {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.modal-friend-motto {
+    text-align: center;
+    font-size: 13px;
+    color: #8a9199;
+    font-style: italic;
+    margin-bottom: 16px;
+}
+
+.modal-friend-motto::before { content: '"'; color: #EAA506; }
+.modal-friend-motto::after { content: '"'; color: #EAA506; }
+
+.modal-friend-section {
+    margin-bottom: 16px;
+}
+
+.modal-friend-section-title {
+    font-size: 11px;
+    color: #EAA506;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+/* Grupos em comum - estilo melhorado */
+.modal-friend-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.modal-friend-group-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(32, 36, 40, 0.6);
+    border: 1px solid rgba(50, 56, 63, 0.4);
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+}
+
+.modal-friend-group-card:hover {
+    border-color: rgba(234, 165, 6, 0.3);
+    background: rgba(32, 36, 40, 0.8);
+}
+
+.modal-friend-group-card img {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+}
+
+.modal-friend-group-card .group-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.modal-friend-group-card .group-card-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modal-friend-group-card .group-card-role {
+    font-size: 9px;
+    color: #EAA506;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Amigos em comum */
+.modal-friend-common-friends {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.modal-friend-common-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(32, 36, 40, 0.6);
+    border: 1px solid rgba(50, 56, 63, 0.4);
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+}
+
+.modal-friend-common-card:hover {
+    border-color: rgba(234, 165, 6, 0.3);
+    background: rgba(32, 36, 40, 0.8);
+}
+
+.modal-friend-common-card img {
+    width: 36px;
+    height: 54px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+}
+
+.modal-friend-common-card .friend-card-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modal-friend-common-card .friend-card-status {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.modal-friend-common-card .friend-card-status.online { color: #22c55e; }
+.modal-friend-common-card .friend-card-status.offline { color: #6b7280; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    body { padding: 20px 12px; }
+    .search-section { flex-wrap: wrap; }
+    .habbo-label { min-width: auto; }
+    .profile-header { flex-direction: column; align-items: center; text-align: center; }
+    .info-grid { grid-template-columns: 1fr; }
+    .badges-grid, .all-badges-grid, .friends-grid, .groups-grid, .rooms-grid, .achievements-grid { grid-template-columns: 1fr; }
+    .section-header { flex-direction: column; align-items: flex-start; }
+    .section-actions { width: 100%; }
+    .section-search { flex: 1; }
+    .modal-content { padding: 24px; max-width: 100%; }
+    .modal-group-info, .modal-room-info, .group-dates { grid-template-columns: 1fr; }
+}
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <div class="header-bar"></div>
+            <div class="header-text">
+                <h1>RCCLens</h1>
+                <p>Inspecione perfis do Habbo em tempo real</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-section">
+        <span class="habbo-label">HABBO</span>
+        <div class="search-input-wrapper">
+            <input type="text" id="usernameInput" placeholder="Digite um nick. Exemplo: ???JUKA" autocomplete="off">
+        </div>
+        <div class="server-select-wrapper">
+            <select class="server-select" id="serverSelect">
+                <option value="br">BR</option>
+                <option value="com">COM</option>
+                <option value="es">ES</option>
+                <option value="fi">FI</option>
+                <option value="fr">FR</option>
+                <option value="de">DE</option>
+                <option value="it">IT</option>
+                <option value="nl">NL</option>
+                <option value="tr">TR</option>
+            </select>
+        </div>
+        <button class="search-btn" id="searchBtn" onclick="searchProfile()">VERIFICAR</button>
+    </div>
+
+    <div class="content-area">
+        <div class="empty-state" id="emptyState">
+            <svg class="empty-icon" viewBox="0 0 24 24">
+                <path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+            </svg>
+            <h3>Nenhum perfil selecionado</h3>
+            <p>Digite um nome de usuario para verificar o perfil</p>
+        </div>
+
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <p>Carregando perfil...</p>
+        </div>
+
+        <div class="error-state" id="errorState">
+            <svg class="error-icon" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
+            </svg>
+            <p id="errorText">Usuario nao encontrado</p>
+        </div>
+
+        <div class="profile-card" id="profileCard">
+            <div class="alert" id="visibilityAlert" style="display: none;">
+                <div class="alert-icon">!</div>
+                <div class="alert-text">Este perfil esta com a visibilidade desativada. Algumas informacoes podem estar indisponiveis.</div>
+            </div>
+
+            <div class="profile-header">
+                <div class="avatar-section">
+                    <div class="avatar-container" id="avatarContainer">
+                        <img src="" alt="Avatar" class="avatar-img" id="avatarImg">
+                    </div>
+                    <div class="online-status" id="onlineStatus">
+                        <div class="online-dot" id="onlineDot"></div>
+                        <span id="onlineText">Offline</span>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName"></div>
+                    <div class="profile-motto" id="profileMotto"></div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="label">Nivel</div>
+                            <div class="value" id="infoLevel"></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Experiencia Total</div>
+                            <div class="value" id="infoXP"></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Membro Desde</div>
+                            <div class="value" id="infoMemberSince"></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Ultimo Acesso</div>
+                            <div class="value" id="infoLastAccess"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-section">
+                <div class="level-header">
+                    <span class="label">Nivel <span id="levelCurrent"></span> - Proximo: <span id="levelNext"></span></span>
+                    <span class="value" id="levelPercent"></span>
+                </div>
+                <div class="level-bar-bg">
+                    <div class="level-bar-fill" id="levelBar"></div>
+                </div>
+            </div>
+
+            <!-- Selected Badges -->
+            <div class="section" id="sectionSelectedBadges">
+                <div class="section-header">
+                    <div class="section-title">Emblemas Selecionados <span class="section-count" id="selectedBadgesCount"></span></div>
+                    <div class="section-actions">
+                        <input type="text" class="section-search" id="searchSelectedBadges" placeholder="Buscar emblema..." oninput="filterSection('selectedBadges')">
+                    </div>
+                </div>
+                <div class="grid-content badges-grid" id="selectedBadgesGrid"></div>
+            </div>
+
+            <!-- All Badges -->
+            <div class="section" id="sectionAllBadges">
+                <div class="section-header">
+                    <div class="section-title">Todos os Emblemas <span class="section-count" id="allBadgesCount"></span></div>
+                    <div class="section-actions">
+                        <input type="text" class="section-search" id="searchAllBadges" placeholder="Buscar emblema..." oninput="filterSection('allBadges')">
+                        <button class="toggle-btn" id="toggleAllBadges" onclick="toggleSection('allBadges')">Ver todos</button>
+                    </div>
+                </div>
+                <div class="grid-content all-badges-grid" id="allBadgesGrid"></div>
+            </div>
+
+            <!-- Friends -->
+            <div class="section" id="sectionFriends">
+                <div class="section-header">
+                    <div class="section-title">Amigos <span class="section-count" id="friendsCount"></span></div>
+                    <div class="section-actions">
+                        <input type="text" class="section-search" id="searchFriends" placeholder="Buscar amigo..." oninput="filterSection('friends')">
+                        <select class="section-filter" id="filterFriends" onchange="filterSection('friends')">
+                            <option value="all">Todos</option>
+                            <option value="online">Online</option>
+                            <option value="offline">Offline</option>
+                        </select>
+                        <button class="toggle-btn" id="toggleFriends" onclick="toggleSection('friends')">Ver todos</button>
+                    </div>
+                </div>
+                <div class="grid-content friends-grid" id="friendsGrid"></div>
+            </div>
+
+            <!-- Groups -->
+            <div class="section" id="sectionGroups">
+                <div class="section-header">
+                    <div class="section-title">Grupos <span class="section-count" id="groupsCount"></span></div>
+                    <div class="section-actions">
+                        <input type="text" class="section-search" id="searchGroups" placeholder="Buscar grupo..." oninput="filterSection('groups')">
+                        <select class="section-filter" id="filterGroups" onchange="filterSection('groups')">
+                            <option value="all">Todos</option>
+                            <option value="admin">Admin</option>
+                            <option value="member">Membro</option>
+                        </select>
+                        <button class="toggle-btn" id="toggleGroups" onclick="toggleSection('groups')">Ver todos</button>
+                    </div>
+                </div>
+                <div class="grid-content groups-grid" id="groupsGrid"></div>
+            </div>
+
+            <!-- Rooms -->
+            <div class="section" id="sectionRooms">
+                <div class="section-header">
+                    <div class="section-title">Quartos <span class="section-count" id="roomsCount"></span></div>
+                    <div class="section-actions">
+                        <input type="text" class="section-search" id="searchRooms" placeholder="Buscar quarto..." oninput="filterSection('rooms')">
+                        <select class="section-filter" id="filterRooms" onchange="filterSection('rooms')">
+                            <option value="all">Todos</option>
+                            <option value="highest">Maior rating</option>
+                            <option value="newest">Mais recentes</option>
+                        </select>
+                        <button class="toggle-btn" id="toggleRooms" onclick="toggleSection('rooms')">Ver todos</button>
+                    </div>
+                </div>
+                <div class="grid-content rooms-grid" id="roomsGrid"></div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="section" id="sectionAchievements">
+                <div class="section-header">
+                    <div class="section-title">Conquistas <span class="section-count" id="achievementsCount"></span></div>
+                    <div class="section-actions">
+                        <input type="text" class="section-search" id="searchAchievements" placeholder="Buscar conquista..." oninput="filterSection('achievements')">
+                        <select class="section-filter" id="filterAchievements" onchange="filterSection('achievements')">
+                            <option value="all">Todas</option>
+                            <option value="identity">Identidade</option>
+                            <option value="social">Social</option>
+                            <option value="explore">Explorar</option>
+                            <option value="room_builder">Construcao</option>
+                            <option value="games">Jogos</option>
+                            <option value="pets">Mascotes</option>
+                            <option value="tutorial">Tutorial</option>
+                            <option value="trading">Negociacao</option>
+                        </select>
+                        <button class="toggle-btn" id="toggleAchievements" onclick="toggleSection('achievements')">Ver todos</button>
+                    </div>
+                </div>
+                <div class="grid-content achievements-grid" id="achievementsGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Badge Modal -->
+<div class="modal-overlay" id="badgeModal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal()">x</button>
+        <img src="" alt="" class="modal-badge-img" id="modalBadgeImg">
+        <div class="modal-badge-code" id="modalBadgeCode"></div>
+        <div class="modal-badge-name" id="modalBadgeName"></div>
+        <div class="modal-divider"></div>
+        <div class="modal-badge-desc" id="modalBadgeDesc"></div>
+    </div>
+</div>
+
+<!-- Group Modal MELHORADO -->
+<div class="modal-overlay" id="groupModal" onclick="closeGroupModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeGroupModal()">x</button>
+        <img src="" alt="" class="modal-group-badge-img" id="modalGroupBadgeImg">
+        <div class="modal-group-name" id="modalGroupName"></div>
+        <div class="modal-group-type" id="modalGroupType"></div>
+        <div class="modal-group-desc" id="modalGroupDesc"></div>
+
+        <!-- Datas do grupo -->
+        <div class="group-dates">
+            <div class="group-dates-item">
+                <div class="label">Grupo criado</div>
+                <div class="value" id="modalGroupCreated"></div>
+            </div>
+            <div class="group-dates-item">
+                <div class="label">Grupo atualizado</div>
+                <div class="value" id="modalGroupUpdated"></div>
+            </div>
+            <div class="group-dates-item">
+                <div class="label">Juntou-se ao grupo</div>
+                <div class="value" id="modalGroupJoined"></div>
+            </div>
+        </div>
+
+        <div class="modal-group-info">
+            <div class="modal-group-info-item">
+                <div class="label">Tipo</div>
+                <div class="value" id="modalGroupTypeVal"></div>
+            </div>
+            <div class="modal-group-info-item">
+                <div class="label">Cargo</div>
+                <div class="value" id="modalGroupRole"></div>
+            </div>
+            <div class="modal-group-info-item">
+                <div class="label">Membros</div>
+                <div class="value" id="modalGroupMembers"></div>
+            </div>
+            <div class="modal-group-info-item">
+                <div class="label">ID do Grupo</div>
+                <div class="value" id="modalGroupId"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Room Modal -->
+<div class="modal-overlay" id="roomModal" onclick="closeRoomModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeRoomModal()">x</button>
+        <img src="" alt="" class="modal-room-img" id="modalRoomImg">
+        <div class="modal-room-name" id="modalRoomName"></div>
+        <div class="modal-room-desc" id="modalRoomDesc"></div>
+        <div class="modal-room-info">
+            <div class="modal-room-info-item">
+                <div class="label">Rating</div>
+                <div class="value" id="modalRoomRating"></div>
+            </div>
+            <div class="modal-room-info-item">
+                <div class="label">Capacidade</div>
+                <div class="value" id="modalRoomCapacity"></div>
+            </div>
+            <div class="modal-room-info-item">
+                <div class="label">Criado em</div>
+                <div class="value" id="modalRoomCreated"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Friend Modal MELHORADO -->
+<div class="modal-overlay" id="friendModal" onclick="closeFriendModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeFriendModal()">x</button>
+        <img src="" alt="" class="modal-friend-avatar" id="modalFriendAvatar">
+        <div class="modal-friend-name" id="modalFriendName"></div>
+        <div class="modal-friend-motto" id="modalFriendMotto"></div>
+        <div class="modal-divider"></div>
+
+        <!-- Grupos em comum -->
+        <div class="modal-friend-section">
+            <div class="modal-friend-section-title">Grupos em Comum</div>
+            <div class="modal-friend-groups" id="modalFriendGroups"></div>
+        </div>
+
+        <!-- Amigos em comum -->
+        <div class="modal-friend-section">
+            <div class="modal-friend-section-title">Amigos em Comum</div>
+            <div class="modal-friend-common-friends" id="modalFriendCommonFriends"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+// ===== CONFIG =====
+const LIMITS = {
+    selectedBadges: Infinity,
+    allBadges: 8,
+    friends: 6,
+    groups: 6,
+    rooms: 4,
+    achievements: 6
+};
+
+// ===== STATE =====
+let currentData = {
+    selectedBadges: [], allBadges: [], friends: [], groups: [], rooms: [], achievements: []
+};
+
+let expandedState = {
+    selectedBadges: true, allBadges: false, friends: false,
+    groups: false, rooms: false, achievements: false
+};
+
+let currentServer = 'br';
+let currentUserGroups = [];
+let currentUserFriends = []; // armazena amigos do usuário atual para comparação
+
+// ===== DOM REFS =====
+const usernameInput = document.getElementById('usernameInput');
+const serverSelect = document.getElementById('serverSelect');
+const searchBtn = document.getElementById('searchBtn');
+
+usernameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') searchProfile();
+});
+
+// ===== HELPERS =====
+function getDomain(server) {
+    const domains = {
+        br: 'www.habbo.com.br', com: 'www.habbo.com', es: 'www.habbo.es',
+        fi: 'www.habbo.fi', fr: 'www.habbo.fr', de: 'www.habbo.de',
+        it: 'www.habbo.it', nl: 'www.habbo.nl', tr: 'www.habbo.com.tr'
+    };
+    return domains[server] || domains.br;
+}
+
+function getApiUrl(server, endpoint) {
+    return `https://${getDomain(server)}/api/public${endpoint}`;
+}
+
+function getAvatarUrl(server, figureString) {
+    return `https://${getDomain(server)}/habbo-imaging/avatarimage?figure=${encodeURIComponent(figureString || '')}&direction=2&head_direction=2&action=std&gesture=sml&size=l`;
+}
+
+function getFriendAvatarUrl(server, figureString) {
+    return `https://${getDomain(server)}/habbo-imaging/avatarimage?figure=${encodeURIComponent(figureString || '')}&direction=2&head_direction=2&action=std&gesture=sml&size=m`;
+}
+
+function getGroupBadgeUrl(server, badgeCode) {
+    return `https://${getDomain(server)}/habbo-imaging/badge/${badgeCode}.gif`;
+}
+
+function getAchievementBadgeUrl(achievementName, level) {
+    return `https://images.habbo.com/c_images/album1584/ACH_${achievementName}${level}.gif`;
+}
+
+function showState(state) {
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('loadingState').classList.remove('active');
+    document.getElementById('errorState').classList.remove('active');
+    document.getElementById('profileCard').classList.remove('active');
+
+    if (state === 'empty') document.getElementById('emptyState').style.display = 'flex';
+    else if (state === 'loading') document.getElementById('loadingState').classList.add('active');
+    else if (state === 'error') document.getElementById('errorState').classList.add('active');
+    else if (state === 'profile') document.getElementById('profileCard').classList.add('active');
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '-';
+    return new Date(dateStr).toLocaleDateString('pt-BR');
+}
+
+function formatDateTime(dateStr) {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function timeAgo(dateStr) {
+    if (!dateStr) return '-';
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Agora';
+    if (diffMins < 60) return `${diffMins} min atras`;
+    if (diffHours < 24) return `${diffHours}h atras`;
+    if (diffDays < 30) return `${diffDays}d atras`;
+    return date.toLocaleDateString('pt-BR');
+}
+
+function capitalize(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// ===== TOGGLE =====
+function toggleSection(section) {
+    expandedState[section] = !expandedState[section];
+    const btn = document.getElementById('toggle' + capitalize(section));
+    if (btn) btn.textContent = expandedState[section] ? 'Ver menos' : 'Ver todos';
+    renderSection(section);
+}
+
+// ===== FILTER =====
+function filterSection(section) {
+    renderSection(section);
+}
+
+function getFilteredData(section) {
+    let data = currentData[section] || [];
+    const searchEl = document.getElementById('search' + capitalize(section));
+    const filterEl = document.getElementById('filter' + capitalize(section));
+
+    const search = searchEl ? searchEl.value.toLowerCase().trim() : '';
+    const filter = filterEl ? filterEl.value : 'all';
+
+    if (search) {
+        data = data.filter(item => {
+            const name = (item.name || item.achievement?.name || '').toLowerCase();
+            const desc = (item.description || item.motto || '').toLowerCase();
+            return name.includes(search) || desc.includes(search);
+        });
+    }
+
+    if (filter !== 'all') {
+        if (section === 'friends') {
+            data = data.filter(item => filter === 'online' ? item.online : !item.online);
+        } else if (section === 'groups') {
+            data = data.filter(item => filter === 'admin' ? item.isAdmin : !item.isAdmin);
+        } else if (section === 'rooms') {
+            if (filter === 'highest') {
+                data = [...data].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            } else if (filter === 'newest') {
+                data = [...data].sort((a, b) => new Date(b.creationTime) - new Date(a.creationTime));
+            }
+        } else if (section === 'achievements') {
+            data = data.filter(item => item.achievement.category === filter);
+        }
+    }
+
+    return data;
+}
+
+function getLimit(section) {
+    return expandedState[section] ? Infinity : (LIMITS[section] || 6);
+}
+
+// ===== RENDER SECTIONS =====
+function renderSection(section) {
+    const data = getFilteredData(section);
+    const limit = getLimit(section);
+    const displayData = data.slice(0, limit);
+
+    const grid = document.getElementById(section + 'Grid');
+    const countEl = document.getElementById(section + 'Count');
+    const btn = document.getElementById('toggle' + capitalize(section));
+
+    if (countEl) countEl.textContent = `(${data.length})`;
+    if (btn) btn.textContent = expandedState[section] ? 'Ver menos' : 'Ver todos';
+
+    grid.innerHTML = '';
+
+    if (displayData.length === 0) {
+        grid.innerHTML = '<div class="section-empty">Nenhum item encontrado</div>';
+        return;
+    }
+
+    switch(section) {
+        case 'selectedBadges':
+        case 'allBadges':
+            displayData.forEach(badge => grid.appendChild(createBadgeCard(badge)));
+            break;
+        case 'friends':
+            displayData.forEach(friend => grid.appendChild(createFriendCard(friend)));
+            break;
+        case 'groups':
+            displayData.forEach(group => grid.appendChild(createGroupCard(group)));
+            break;
+        case 'rooms':
+            displayData.forEach(room => grid.appendChild(createRoomCard(room)));
+            break;
+        case 'achievements':
+            displayData.forEach(ach => grid.appendChild(createAchievementCard(ach)));
+            break;
+    }
+}
+
+// ===== CARD CREATORS =====
+function createBadgeCard(badge) {
+    const el = document.createElement('div');
+    el.className = 'badge-item';
+    el.onclick = () => openBadgeModal(badge);
+    el.innerHTML = `
+        <img src="https://images.habbo.com/c_images/album1584/${badge.code}.gif" alt="${badge.name}" 
+             onerror="this.onerror=null;this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<div style=width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#23282F;border-radius:8px;font-size:10px;color:#5a6168;font-weight:700;>${badge.code}</div>')">
+        <div class="badge-info">
+            <div class="badge-name" title="${badge.name}">${badge.name}</div>
+            <div class="badge-desc">${badge.description || ''}</div>
+        </div>
+    `;
+    return el;
+}
+
+function createFriendCard(friend) {
+    const el = document.createElement('div');
+    el.className = 'friend-item';
+    el.onclick = () => openFriendModal(friend);
+    el.innerHTML = `
+        <img src="${getFriendAvatarUrl(currentServer, friend.figureString)}" alt="${friend.name}"
+             onerror="this.onerror=null;this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<div style=width:48px;height:72px;display:flex;align-items:center;justify-content:center;background:#23282F;border-radius:8px;font-size:10px;color:#5a6168;>?</div>')">
+        <div class="friend-name" title="${friend.name}">${friend.name}</div>
+        <div class="friend-motto" title="${friend.motto || ''}">${friend.motto || ''}</div>
+    `;
+    return el;
+}
+
+function createGroupCard(group) {
+    const el = document.createElement('div');
+    el.className = 'group-item';
+    el.onclick = () => openGroupModal(group);
+    const badgeUrl = group.badgeCode ? getGroupBadgeUrl(currentServer, group.badgeCode) : '';
+    el.innerHTML = `
+        <img src="${badgeUrl}" alt="${group.name}" class="group-badge-img"
+             onerror="this.onerror=null;this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<div class=group-badge-img style=background:linear-gradient(135deg,#${group.primaryColour||'32383F'},#${group.secondaryColour||'1E1E1E'});display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.3);>${group.name.charAt(0).toUpperCase()}</div>')">
+        <div class="group-info">
+            <div class="group-name" title="${group.name}">${group.name}</div>
+            <div class="group-desc">${group.description || ''}</div>
+            ${group.isAdmin ? '<div class="group-admin">Admin</div>' : ''}
+        </div>
+    `;
+    return el;
+}
+
+function createRoomCard(room) {
+    const el = document.createElement('div');
+    el.className = 'room-item';
+    el.onclick = () => openRoomModal(room);
+    el.innerHTML = `
+        <div class="room-thumb-wrapper">
+            <img src="${room.thumbnailUrl || ''}" alt="${room.name}" class="room-thumb" 
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="room-thumb-placeholder" style="display:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5"/>
+                </svg>
+                <span>Sem foto</span>
+            </div>
+        </div>
+        <div class="room-info">
+            <div class="room-name" title="${room.name}">${room.name}</div>
+            <div class="room-meta">
+                <span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                    ${room.rating || 0}
+                </span>
+                <span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                    ${room.maximumVisitors || 0}
+                </span>
+            </div>
+        </div>
+    `;
+    return el;
+}
+
+function createAchievementCard(ach) {
+    const el = document.createElement('div');
+    el.className = 'achievement-item';
+    const badgeUrl = getAchievementBadgeUrl(ach.achievement.name, ach.level);
+    el.innerHTML = `
+        <img src="${badgeUrl}" alt="${ach.achievement.name}" class="achievement-img"
+             onerror="this.onerror=null;this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<div class=achievement-img style=background:rgba(234,165,6,0.1);border:1px solid rgba(234,165,6,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#EAA506;>${ach.level}</div>')">
+        <div class="achievement-info">
+            <div class="achievement-name">${ach.achievement.name}<span class="level-tag">Nv. ${ach.level}</span></div>
+            <div class="achievement-category">${ach.achievement.category}</div>
+        </div>
+        <div class="achievement-score">${ach.score} pts</div>
+    `;
+    return el;
+}
+
+// ===== MODALS =====
+function openBadgeModal(badge) {
+    document.getElementById('modalBadgeImg').src = `https://images.habbo.com/c_images/album1584/${badge.code}.gif`;
+    document.getElementById('modalBadgeCode').textContent = badge.code;
+    document.getElementById('modalBadgeName').textContent = badge.name;
+    document.getElementById('modalBadgeDesc').textContent = badge.description || 'Sem descricao';
+    document.getElementById('badgeModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+    if (e && e.target !== document.getElementById('badgeModal') && !e.target.classList.contains('modal-close')) return;
+    document.getElementById('badgeModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ===== GROUP MODAL MELHORADO =====
+function openGroupModal(group) {
+    const badgeUrl = group.badgeCode ? getGroupBadgeUrl(currentServer, group.badgeCode) : '';
+    const img = document.getElementById('modalGroupBadgeImg');
+    img.src = badgeUrl;
+    img.onerror = function() {
+        this.style.display = 'none';
+        const fallback = document.createElement('div');
+        fallback.className = 'modal-group-badge-img';
+        fallback.style.background = `linear-gradient(135deg, #${group.primaryColour||'32383F'}, #${group.secondaryColour||'1E1E1E'})`;
+        fallback.style.display = 'flex';
+        fallback.style.alignItems = 'center';
+        fallback.style.justifyContent = 'center';
+        fallback.style.fontSize = '24px';
+        fallback.style.fontWeight = '700';
+        fallback.style.color = '#fff';
+        fallback.textContent = group.name.charAt(0).toUpperCase();
+        this.parentElement.insertBefore(fallback, this);
+    };
+    img.style.display = 'block';
+
+    document.getElementById('modalGroupName').textContent = group.name;
+    document.getElementById('modalGroupType').textContent = group.type || 'NORMAL';
+    document.getElementById('modalGroupDesc').textContent = group.description || 'Sem descricao';
+
+    // NOVAS DATAS DO GRUPO
+    document.getElementById('modalGroupCreated').textContent = formatDate(group.created);
+    document.getElementById('modalGroupUpdated').textContent = formatDate(group.updated);
+    document.getElementById('modalGroupJoined').textContent = formatDate(group.memberSince);
+
+    document.getElementById('modalGroupTypeVal').textContent = group.type || 'NORMAL';
+    document.getElementById('modalGroupRole').textContent = group.isAdmin ? 'Administrador' : 'Membro';
+    document.getElementById('modalGroupMembers').textContent = group.membersCount !== undefined ? group.membersCount.toLocaleString('pt-BR') : 'N/A';
+    document.getElementById('modalGroupId').textContent = group.id || 'N/A';
+
+    document.getElementById('groupModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGroupModal(e) {
+    if (e && e.target !== document.getElementById('groupModal') && !e.target.classList.contains('modal-close')) return;
+    document.getElementById('groupModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function openRoomModal(room) {
+    const img = document.getElementById('modalRoomImg');
+    img.src = room.thumbnailUrl || '';
+    img.onerror = function() {
+        this.style.display = 'none';
+    };
+    img.style.display = 'block';
+
+    document.getElementById('modalRoomName').textContent = room.name;
+    document.getElementById('modalRoomDesc').textContent = room.description || 'Sem descricao';
+    document.getElementById('modalRoomRating').textContent = room.rating || 0;
+    document.getElementById('modalRoomCapacity').textContent = room.maximumVisitors || 0;
+    document.getElementById('modalRoomCreated').textContent = formatDate(room.creationTime);
+    document.getElementById('roomModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRoomModal(e) {
+    if (e && e.target !== document.getElementById('roomModal') && !e.target.classList.contains('modal-close')) return;
+    document.getElementById('roomModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ===== FRIEND MODAL MELHORADO =====
+async function openFriendModal(friend) {
+    document.getElementById('modalFriendAvatar').src = getFriendAvatarUrl(currentServer, friend.figureString);
+    document.getElementById('modalFriendName').textContent = friend.name;
+    document.getElementById('modalFriendMotto').textContent = friend.motto || 'Sem missao';
+
+    const groupsContainer = document.getElementById('modalFriendGroups');
+    const commonFriendsContainer = document.getElementById('modalFriendCommonFriends');
+
+    groupsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Carregando grupos...</span>';
+    commonFriendsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Carregando amigos...</span>';
+
+    document.getElementById('friendModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    try {
+        // Fetch friend profile to get uniqueId
+        const userRes = await fetch(getApiUrl(currentServer, `/users?name=${encodeURIComponent(friend.name)}`));
+        if (!userRes.ok) {
+            groupsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Nao foi possivel carregar os grupos</span>';
+            commonFriendsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Nao foi possivel carregar os amigos</span>';
+            return;
+        }
+        const userData = await userRes.json();
+        const uniqueId = userData.uniqueId;
+
+        // Fetch friend groups e friend friends em paralelo
+        const [groupsRes, friendsRes] = await Promise.allSettled([
+            fetch(getApiUrl(currentServer, `/users/${uniqueId}/groups`)),
+            fetch(getApiUrl(currentServer, `/users/${uniqueId}/friends`))
+        ]);
+
+        // ===== GRUPOS EM COMUM =====
+        let friendGroups = [];
+        if (groupsRes.status === 'fulfilled' && groupsRes.value.ok) {
+            friendGroups = await groupsRes.value.json();
+        }
+
+        const mutualGroups = currentUserGroups.filter(ug => friendGroups.some(fg => fg.id === ug.id));
+
+        groupsContainer.innerHTML = '';
+        if (mutualGroups.length > 0) {
+            mutualGroups.forEach(g => {
+                const card = document.createElement('div');
+                card.className = 'modal-friend-group-card';
+                const badgeUrl = g.badgeCode ? getGroupBadgeUrl(currentServer, g.badgeCode) : '';
+                card.innerHTML = `
+                    <img src="${badgeUrl}" alt="${g.name}" 
+                         onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<div style=width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#${g.primaryColour||'32383F'},#${g.secondaryColour||'1E1E1E'});display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;>${g.name.charAt(0).toUpperCase()}</div>')">
+                    <div class="group-card-info">
+                        <div class="group-card-name" title="${g.name}">${g.name}</div>
+                        <div class="group-card-role">${g.isAdmin ? 'Administrador' : 'Membro'}</div>
+                    </div>
+                `;
+                groupsContainer.appendChild(card);
+            });
+        } else {
+            groupsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Nenhum grupo em comum</span>';
+        }
+
+        // ===== AMIGOS EM COMUM =====
+        let friendFriends = [];
+        if (friendsRes.status === 'fulfilled' && friendsRes.value.ok) {
+            friendFriends = await friendsRes.value.json();
+        }
+
+        const mutualFriends = currentUserFriends.filter(uf => friendFriends.some(ff => ff.name === uf.name && ff.name !== friend.name));
+
+        commonFriendsContainer.innerHTML = '';
+        if (mutualFriends.length > 0) {
+            mutualFriends.forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'modal-friend-common-card';
+                card.innerHTML = `
+                    <img src="${getFriendAvatarUrl(currentServer, f.figureString)}" alt="${f.name}"
+                         onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<div style=width:36px;height:54px;display:flex;align-items:center;justify-content:center;background:#23282F;border-radius:8px;font-size:10px;color:#5a6168;>?</div>')">
+                    <div style="flex:1;min-width:0;">
+                        <div class="friend-card-name" title="${f.name}">${f.name}</div>
+                        <div class="friend-card-status ${f.online ? 'online' : 'offline'}">${f.online ? 'Online' : 'Offline'}</div>
+                    </div>
+                `;
+                commonFriendsContainer.appendChild(card);
+            });
+        } else {
+            commonFriendsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Nenhum amigo em comum</span>';
+        }
+
+    } catch (err) {
+        groupsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Erro ao carregar grupos</span>';
+        commonFriendsContainer.innerHTML = '<span style="color:#5a6168;font-size:11px;">Erro ao carregar amigos</span>';
+    }
+}
+
+function closeFriendModal(e) {
+    if (e && e.target !== document.getElementById('friendModal') && !e.target.classList.contains('modal-close')) return;
+    document.getElementById('friendModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Keyboard escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeModal();
+        closeGroupModal();
+        closeRoomModal();
+        closeFriendModal();
+    }
+});
+
+// ===== MAIN SEARCH =====
+async function searchProfile() {
+    const username = usernameInput.value.trim();
+    if (!username) return;
+
+    currentServer = serverSelect.value;
+    showState('loading');
+    searchBtn.disabled = true;
+
+    // Reset expanded states
+    Object.keys(expandedState).forEach(k => expandedState[k] = false);
+    expandedState.selectedBadges = true;
+    Object.keys(LIMITS).forEach(k => {
+        const btn = document.getElementById('toggle' + capitalize(k));
+        if (btn) btn.textContent = 'Ver todos';
+    });
+
+    try {
+        const userRes = await fetch(getApiUrl(currentServer, `/users?name=${encodeURIComponent(username)}`));
+        if (!userRes.ok) {
+            document.getElementById('errorText').textContent = userRes.status === 404 
+                ? 'Usuario nao encontrado neste servidor' 
+                : 'Erro ao buscar perfil. Tente novamente.';
+            showState('error');
+            searchBtn.disabled = false;
+            return;
+        }
+
+        const userData = await userRes.json();
+        const uniqueId = userData.uniqueId;
+
+        // Fetch all data in parallel
+        const [profileRes, friendsRes, groupsRes, roomsRes, badgesRes, achievementsRes] = await Promise.allSettled([
+            fetch(getApiUrl(currentServer, `/users/${uniqueId}/profile`)),
+            fetch(getApiUrl(currentServer, `/users/${uniqueId}/friends`)),
+            fetch(getApiUrl(currentServer, `/users/${uniqueId}/groups`)),
+            fetch(getApiUrl(currentServer, `/users/${uniqueId}/rooms`)),
+            fetch(getApiUrl(currentServer, `/users/${uniqueId}/badges`)),
+            fetch(getApiUrl(currentServer, `/achievements/${uniqueId}`))
+        ]);
+
+        const profileData = profileRes.status === 'fulfilled' && profileRes.value.ok ? await profileRes.value.json() : null;
+        const friendsData = friendsRes.status === 'fulfilled' && friendsRes.value.ok ? await friendsRes.value.json() : [];
+        const groupsData = groupsRes.status === 'fulfilled' && groupsRes.value.ok ? await groupsRes.value.json() : [];
+        const roomsData = roomsRes.status === 'fulfilled' && roomsRes.value.ok ? await roomsRes.value.json() : [];
+        const badgesData = badgesRes.status === 'fulfilled' && badgesRes.value.ok ? await badgesRes.value.json() : [];
+        const achievementsData = achievementsRes.status === 'fulfilled' && achievementsRes.value.ok ? await achievementsRes.value.json() : [];
+
+        // Store user's groups and friends for mutual comparison
+        currentUserGroups = groupsData;
+        currentUserFriends = friendsData;
+
+        renderProfile(userData, profileData);
+
+        currentData = {
+            selectedBadges: userData.selectedBadges || [],
+            allBadges: badgesData,
+            friends: friendsData,
+            groups: groupsData,
+            rooms: roomsData,
+            achievements: achievementsData
+        };
+
+        // Render all sections
+        ['selectedBadges', 'allBadges', 'friends', 'groups', 'rooms', 'achievements'].forEach(section => {
+            renderSection(section);
+        });
+
+        showState('profile');
+    } catch (err) {
+        document.getElementById('errorText').textContent = 'Erro de conexao. Verifique sua internet.';
+        showState('error');
+    } finally {
+        searchBtn.disabled = false;
+    }
+}
+
+// ===== RENDER PROFILE HEADER =====
+function renderProfile(userData, profileData) {
+    // Visibility alert
+    document.getElementById('visibilityAlert').style.display = userData.profileVisible === false ? 'flex' : 'none';
+
+    // Avatar
+    const avatarContainer = document.getElementById('avatarContainer');
+    document.getElementById('avatarImg').src = getAvatarUrl(currentServer, userData.figureString);
+    if (userData.online) {
+        avatarContainer.classList.add('online');
+    } else {
+        avatarContainer.classList.remove('online');
+    }
+
+    // Online status
+    const onlineStatus = document.getElementById('onlineStatus');
+    const onlineText = document.getElementById('onlineText');
+    if (userData.online) {
+        onlineStatus.classList.remove('offline');
+        onlineText.textContent = 'Online';
+    } else {
+        onlineStatus.classList.add('offline');
+        onlineText.textContent = 'Offline';
+    }
+
+    // Name & Motto
+    document.getElementById('profileName').textContent = userData.name || 'Desconhecido';
+    document.getElementById('profileMotto').textContent = userData.motto || 'Sem missao';
+
+    // Info grid
+    document.getElementById('infoLevel').textContent = userData.currentLevel !== undefined ? userData.currentLevel : '-';
+    document.getElementById('infoXP').textContent = userData.totalExperience !== undefined ? userData.totalExperience.toLocaleString('pt-BR') : '-';
+    document.getElementById('infoMemberSince').textContent = formatDate(userData.memberSince);
+    document.getElementById('infoLastAccess').textContent = timeAgo(userData.lastAccessTime);
+
+    // Level progress with current and next level
+    const currentLevel = userData.currentLevel || 0;
+    const percent = userData.currentLevelCompletePercent || 0;
+    document.getElementById('levelCurrent').textContent = currentLevel;
+    document.getElementById('levelNext').textContent = currentLevel + 1;
+    document.getElementById('levelPercent').textContent = `${percent}%`;
+    document.getElementById('levelBar').style.width = `${percent}%`;
+}
+
+</script>
+</body>
+</html>
